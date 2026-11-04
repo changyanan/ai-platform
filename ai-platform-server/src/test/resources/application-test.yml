@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/ai_platform_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: ai_platform
+    password: AiPlatform@2026
+    hikari:
+      maximum-pool-size: 4
+  flyway:
+    enabled: true
+    clean-disabled: true
+  data:
+    redis:
+      database: 15
+
+ai-platform:
+  jwt:
+    secret: integration-test-only-jwt-secret-0123456789abcdefghijklmnopqrstuvwxyz
+    expiration-minutes: 30
+  bootstrap:
+    enabled: false
+  rag:
+    postgres:
+      url: ${PGVECTOR_URL:jdbc:postgresql://127.0.0.1:5432/ai_platform_vector}
+      username: ${PGVECTOR_USERNAME:ai_platform}
+      password: ${PGVECTOR_PASSWORD:AiPlatform@2026}
+  cors:
+    allowed-origins: http://localhost:5173
+
+logging:
+  level:
+    root: WARN
+    com.aiplatform: INFO
+    org.springframework.security: WARN

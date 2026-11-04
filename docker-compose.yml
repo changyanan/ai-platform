@@ -1,0 +1,169 @@
+name: ai-platform
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: ai-platform-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ai_platform}
+      MYSQL_USER: ${MYSQL_USERNAME:-ai_platform}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-AiPlatform@2026}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-ChangeMe_Root_2026}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+08:00
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'mysqladmin ping -h 127.0.0.1 -uroot -p"$${MYSQL_ROOT_PASSWORD}" --silent',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    networks:
+      - ai-platform-net
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: ai-platform-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ai_platform_vector}
+      POSTGRES_USER: ${POSTGRES_USER:-ai_platform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-AiPlatformVector@2026}
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./deploy/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      - ai-platform-net
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: ai-platform-redis
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-AiPlatformRedis@2026}
+    command:
+      [
+        'sh',
+        '-c',
+        'exec redis-server --appendonly yes --requirepass "$${REDIS_PASSWORD}"',
+      ]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'redis-cli -a "$${REDIS_PASSWORD}" --no-auth-warning ping | grep -q PONG',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ai-platform-net
+
+  ai-platform-server:
+    build:
+      context: .
+      dockerfile: ai-platform-server/Dockerfile
+    image: ai-platform/server:1.0.0
+    container_name: ai-platform-server
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SERVER_PORT: 8080
+      MYSQL_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-ai_platform}?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-ai_platform}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-AiPlatform@2026}
+      PGVECTOR_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-ai_platform_vector}
+      PGVECTOR_USERNAME: ${POSTGRES_USER:-ai_platform}
+      PGVECTOR_PASSWORD: ${POSTGRES_PASSWORD:-AiPlatformVector@2026}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-AiPlatformRedis@2026}
+      REDIS_DATABASE: 0
+      AI_PLATFORM_JWT_SECRET: ${AI_PLATFORM_JWT_SECRET:-please-change-this-demo-jwt-secret-at-least-32-bytes-0123456789}
+      AI_PLATFORM_MASTER_KEY: ${AI_PLATFORM_MASTER_KEY:-please-change-this-demo-master-key-at-least-32-bytes}
+      AI_PLATFORM_ADMIN_PASSWORD: ${AI_PLATFORM_ADMIN_PASSWORD:-Admin@123456}
+      AI_PLATFORM_DEMO_ENABLED: ${AI_PLATFORM_DEMO_ENABLED:-false}
+      AI_PLATFORM_DEMO_PASSWORD: ${AI_PLATFORM_DEMO_PASSWORD:-Demo@123456}
+      AI_PLATFORM_OPEN_API_ENABLED: ${AI_PLATFORM_OPEN_API_ENABLED:-false}
+      AI_PLATFORM_OPEN_API_KEY: ${AI_PLATFORM_OPEN_API_KEY:-}
+      AI_PLATFORM_OCR_ENABLED: ${AI_PLATFORM_OCR_ENABLED:-true}
+      AI_PLATFORM_OCR_TESSERACT_COMMAND: ${AI_PLATFORM_OCR_TESSERACT_COMMAND:-tesseract}
+      AI_PLATFORM_OCR_TESSDATA_DIR: ${AI_PLATFORM_OCR_TESSDATA_DIR:-/app/data/tessdata}
+      AI_PLATFORM_OCR_LANGUAGES: ${AI_PLATFORM_OCR_LANGUAGES:-chi_sim+eng}
+      AI_PLATFORM_STORAGE_ROOT: /app/data/uploads
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-20MB}
+      MAX_REQUEST_SIZE: ${MAX_REQUEST_SIZE:-50MB}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      TZ: Asia/Shanghai
+    volumes:
+      - uploads-data:/app/data/uploads
+    ports:
+      - '127.0.0.1:${SERVER_PORT:-8080}:8080'
+    depends_on:
+      mysql:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:8080/api/health || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    networks:
+      - ai-platform-net
+
+  ai-platform-web:
+    build:
+      context: .
+      dockerfile: ai-web/Dockerfile
+    image: ai-platform/web:1.0.0
+    container_name: ai-platform-web
+    restart: unless-stopped
+    ports:
+      - '${WEB_PORT:-80}:80'
+    depends_on:
+      ai-platform-server:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O - http://localhost/health | grep -q ok']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+    networks:
+      - ai-platform-net
+
+volumes:
+  mysql-data:
+    name: ai-platform-mysql-data
+  postgres-data:
+    name: ai-platform-postgres-data
+  redis-data:
+    name: ai-platform-redis-data
+  uploads-data:
+    name: ai-platform-uploads
+
+networks:
+  ai-platform-net:
+    name: ai-platform-net
+    driver: bridge

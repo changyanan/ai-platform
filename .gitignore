@@ -1,0 +1,55 @@
+# ============================================================
+# AI Platform - Git ignore
+# 真实密钥、运行数据、构建产物禁止提交
+# ============================================================
+
+# Maven
+**/target/
+*.class
+*.jar
+*.war
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Frontend
+**/node_modules/
+**/dist/
+**/.vite/
+**/*.tsbuildinfo
+.pnpm-store/
+coverage/
+
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.p12
+*.jks
+*.keystore
+secrets/
+
+# 本地运行数据
+.local/
+data/
+logs/
+uploads/
+*.log
+*.pid
+
+# IDE
+.idea/
+*.iml
+.vscode/
+!.vscode/settings.example.json
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker local overrides
+docker-compose.override.yml

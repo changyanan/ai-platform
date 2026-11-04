@@ -1,0 +1,25 @@
+-- P4 多模态任务：图片理解/OCR、文档抽取/摘要、语音转写
+CREATE TABLE ai_multimodal_task (
+    id                BIGINT        NOT NULL AUTO_INCREMENT,
+    user_id           BIGINT        NOT NULL,
+    file_asset_id     BIGINT        NOT NULL,
+    file_name         VARCHAR(220)  NOT NULL,
+    file_category     VARCHAR(20)   NOT NULL COMMENT 'IMAGE/DOCUMENT/TEXT/AUDIO',
+    task_type         VARCHAR(40)   NOT NULL COMMENT 'OCR/IMAGE_UNDERSTANDING/DOCUMENT_EXTRACT/DOCUMENT_SUMMARY/AUDIO_TRANSCRIBE',
+    model_config_id   BIGINT        NULL,
+    model_name        VARCHAR(160)  NULL,
+    status            VARCHAR(20)   NOT NULL COMMENT 'PROCESSING/SUCCESS/FAILED/UNSUPPORTED',
+    extracted_text    MEDIUMTEXT    NULL COMMENT '文档解析文本或 ASR 转写文本',
+    result_text       MEDIUMTEXT    NULL COMMENT '模型结果或原始抽取文本',
+    error_message     VARCHAR(2000) NULL,
+    prompt_tokens     INT           NULL,
+    completion_tokens INT           NULL,
+    total_tokens      INT           NULL,
+    token_estimated   TINYINT       NOT NULL DEFAULT 0,
+    latency_ms        BIGINT        NULL,
+    created_at        DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    finished_at       DATETIME      NULL,
+    PRIMARY KEY (id),
+    KEY idx_ai_multimodal_user (user_id, created_at),
+    KEY idx_ai_multimodal_file (file_asset_id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '多模态处理任务';

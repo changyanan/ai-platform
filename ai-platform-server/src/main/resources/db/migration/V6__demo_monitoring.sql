@@ -1,0 +1,56 @@
+-- ============================================================
+-- P5 演示监控数据
+-- 全部标记为 SIMULATED，仅用于展示监控图表与页面布局；
+-- 不冒充实盘调用，不参与“真实调用”财务结论。
+-- ============================================================
+
+INSERT INTO ai_model_call_log
+(trace_id, user_id, model_config_id, provider_code, model_name, request_type, conversation_id,
+ prompt_tokens, completion_tokens, total_tokens, latency_ms, success, http_status,
+ error_code, error_message, estimated, data_source,
+ input_price_snapshot, output_price_snapshot, currency, estimated_cost, request_summary, created_at)
+VALUES
+('sim0000000000001', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'CHAT', NULL, 128, 46, 174, 1420, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：产品资料问答', DATE_SUB(NOW(3), INTERVAL 6 DAY)),
+('sim0000000000002', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'AGENT', NULL, 486, 88, 574, 3890, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：Agent 订单分析', DATE_SUB(NOW(3), INTERVAL 6 DAY)),
+('sim0000000000003', 1, 3, 'DASHSCOPE', '通义千问 VL Max', 'VISION', NULL, 1204, 63, 1267, 5210, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：图片理解', DATE_SUB(NOW(3), INTERVAL 5 DAY)),
+('sim0000000000004', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'RAG_ANSWER', NULL, 808, 31, 839, 6204, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：知识库问答', DATE_SUB(NOW(3), INTERVAL 5 DAY)),
+('sim0000000000005', 1, 5, 'OLLAMA', '本地 Nomic Embedding', 'RAG_EMBEDDING', NULL, 216, 0, 216, 1860, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：知识库向量化', DATE_SUB(NOW(3), INTERVAL 5 DAY)),
+('sim0000000000006', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'PROMPT_TEST', NULL, 186, 92, 278, 2490, 0, 429,
+ 'SIMULATED_RATE_LIMIT', '演示限流失败', 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：Prompt 测试失败', DATE_SUB(NOW(3), INTERVAL 4 DAY)),
+('sim0000000000007', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'CHAT', NULL, 342, 118, 460, 2760, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：多轮客服对话', DATE_SUB(NOW(3), INTERVAL 4 DAY)),
+('sim0000000000008', 1, 3, 'DASHSCOPE', '通义千问 VL Max', 'VISION', NULL, 986, 54, 1040, 4380, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：发票识别', DATE_SUB(NOW(3), INTERVAL 3 DAY)),
+('sim0000000000009', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'AGENT', NULL, 672, 154, 826, 4890, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：经营分析 Agent', DATE_SUB(NOW(3), INTERVAL 3 DAY)),
+('sim0000000000010', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'DOCUMENT_ANALYSIS', NULL, 3400, 260, 3660, 7120, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：合同摘要', DATE_SUB(NOW(3), INTERVAL 3 DAY)),
+('sim0000000000011', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'RAG_ANSWER', NULL, 1260, 76, 1336, 5840, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：产品知识问答', DATE_SUB(NOW(3), INTERVAL 2 DAY)),
+('sim0000000000012', 1, 5, 'OLLAMA', '本地 Nomic Embedding', 'RAG_EMBEDDING', NULL, 188, 0, 188, 1490, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：文档向量化', DATE_SUB(NOW(3), INTERVAL 2 DAY)),
+('sim0000000000013', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'CHAT', NULL, 96, 32, 128, 980, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：日常问答', DATE_SUB(NOW(3), INTERVAL 2 DAY)),
+('sim0000000000014', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'PROMPT_TEST', NULL, 245, 110, 355, 3020, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：Prompt 版本测试', DATE_SUB(NOW(3), INTERVAL 1 DAY)),
+('sim0000000000015', 1, 3, 'DASHSCOPE', '通义千问 VL Max', 'VISION', NULL, 1620, 188, 1808, 6840, 0, 500,
+ 'SIMULATED_PROVIDER_ERROR', '演示供应商超时', 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：图片解析失败', DATE_SUB(NOW(3), INTERVAL 1 DAY)),
+('sim0000000000016', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'AGENT', NULL, 520, 96, 616, 4120, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：客服 Agent 工具调用', DATE_SUB(NOW(3), INTERVAL 1 DAY)),
+('sim0000000000017', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'RAG_ANSWER', NULL, 940, 52, 992, 4760, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：售后政策问答', DATE_SUB(NOW(3), INTERVAL 12 HOUR)),
+('sim0000000000018', 1, 5, 'OLLAMA', '本地 Nomic Embedding', 'RAG_EMBEDDING', NULL, 142, 0, 142, 1160, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：FAQ 向量化', DATE_SUB(NOW(3), INTERVAL 8 HOUR)),
+('sim0000000000019', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'CHAT', NULL, 268, 84, 352, 2140, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：方案写作', DATE_SUB(NOW(3), INTERVAL 6 HOUR)),
+('sim0000000000020', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'DOCUMENT_ANALYSIS', NULL, 2100, 148, 2248, 5680, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：Excel 数据分析', DATE_SUB(NOW(3), INTERVAL 4 HOUR)),
+('sim0000000000021', 1, 1, 'DEEPSEEK', 'DeepSeek Chat', 'AGENT', NULL, 710, 130, 840, 4560, 1, 200,
+ NULL, NULL, 0, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：库存 Agent 分析', DATE_SUB(NOW(3), INTERVAL 3 HOUR)),
+('sim0000000000022', 1, 4, 'OLLAMA', '本地 Qwen2.5 0.5B', 'ASR', NULL, NULL, NULL, NULL, 3200, 1, 200,
+ NULL, NULL, 1, 'SIMULATED', NULL, NULL, NULL, NULL, '演示监控数据（SIMULATED）：语音转写', DATE_SUB(NOW(3), INTERVAL 2 HOUR));

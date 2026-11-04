@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      聚合工程本身不承载业务依赖。所有子模块统一继承 ai-dependencies，
+      由 ai-dependencies 统一管理版本与构建插件，避免版本漂移。
+    -->
+    <groupId>com.aiplatform</groupId>
+    <artifactId>ai-platform</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>AI Platform</name>
+    <description>独立的企业级 AI 智能应用平台</description>
+
+    <modules>
+        <module>ai-dependencies</module>
+        <module>ai-common</module>
+        <module>ai-module-model</module>
+        <module>ai-module-audit</module>
+        <module>ai-module-monitor</module>
+        <module>ai-module-tool</module>
+        <module>ai-module-prompt</module>
+        <module>ai-module-chat</module>
+        <module>ai-module-agent</module>
+        <module>ai-module-multimodal</module>
+        <module>ai-module-integration</module>
+        <module>ai-module-rag</module>
+        <module>ai-platform-server</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.release>21</maven.compiler.release>
+    </properties>
+</project>

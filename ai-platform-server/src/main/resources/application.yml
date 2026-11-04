@@ -1,0 +1,135 @@
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  max-http-request-header-size: 32KB
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/css,application/javascript,text/plain
+    min-response-size: 1024
+
+spring:
+  application:
+    name: ai-platform
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  datasource:
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/ai_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true}
+    username: ${MYSQL_USERNAME:ai_platform}
+    password: ${MYSQL_PASSWORD:AiPlatform@2026}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: ai-platform-hikari
+      maximum-pool-size: ${DB_POOL_SIZE:12}
+      minimum-idle: 2
+      connection-timeout: 10000
+      validation-timeout: 3000
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    encoding: UTF-8
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 3s
+      connect-timeout: 3s
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:20MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
+  jackson:
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: org.apache.ibatis.type.EnumTypeHandler
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+  health:
+    redis:
+      enabled: false
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+  default-flat-param-object: true
+
+ai-platform:
+  jwt:
+    # 仅用于本地 Demo；生产必须通过环境变量覆盖为至少 32 字节的随机值
+    secret: ${AI_PLATFORM_JWT_SECRET:ai-platform-demo-only-jwt-secret-change-me-before-production-9f7c2e4a1b6d8f0c}
+    expiration-minutes: ${AI_PLATFORM_JWT_EXPIRATION_MINUTES:120}
+    issuer: ai-platform
+  crypto:
+    # 仅用于本地 Demo；生产必须通过环境变量覆盖。用于 AES-GCM 加密模型 API Key。
+    master-key: ${AI_PLATFORM_MASTER_KEY:ai-platform-demo-master-key-change-me-before-production-4a8d2f6c}
+  chat:
+    max-context-messages: ${AI_PLATFORM_CHAT_CONTEXT_MESSAGES:20}
+    sse-timeout-ms: ${AI_PLATFORM_SSE_TIMEOUT_MS:300000}
+    max-input-chars: ${AI_PLATFORM_CHAT_MAX_INPUT_CHARS:20000}
+  cors:
+    allowed-origins: ${AI_PLATFORM_CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+  open-api:
+    enabled: ${AI_PLATFORM_OPEN_API_ENABLED:false}
+    key: ${AI_PLATFORM_OPEN_API_KEY:}
+  ocr:
+    # 图片识别失败时，用本地 Tesseract OCR 兜底；未安装时自动跳过
+    enabled: ${AI_PLATFORM_OCR_ENABLED:true}
+    tesseract-command: ${AI_PLATFORM_OCR_TESSERACT_COMMAND:tesseract}
+    tessdata-dir: ${AI_PLATFORM_OCR_TESSDATA_DIR:./data/tessdata}
+    languages: ${AI_PLATFORM_OCR_LANGUAGES:chi_sim+eng}
+    timeout-seconds: ${AI_PLATFORM_OCR_TIMEOUT_SECONDS:60}
+  bootstrap:
+    enabled: ${AI_PLATFORM_BOOTSTRAP_ENABLED:true}
+    admin-username: ${AI_PLATFORM_ADMIN_USERNAME:admin}
+    admin-password: ${AI_PLATFORM_ADMIN_PASSWORD:Admin@123456}
+    demo-enabled: ${AI_PLATFORM_DEMO_ENABLED:false}
+    demo-username: ${AI_PLATFORM_DEMO_USERNAME:demo}
+    demo-password: ${AI_PLATFORM_DEMO_PASSWORD:Demo@123456}
+  storage:
+    root: ${AI_PLATFORM_STORAGE_ROOT:./data/uploads}
+  upload:
+    max-image-size: 15MB
+    max-document-size: 20MB
+    max-audio-size: 25MB
+  rag:
+    postgres:
+      url: ${PGVECTOR_URL:jdbc:postgresql://127.0.0.1:5432/ai_platform_vector}
+      username: ${PGVECTOR_USERNAME:ai_platform}
+      password: ${PGVECTOR_PASSWORD:AiPlatform@2026}
+      table: ai_chunk_embedding
+      pool-size: 6
+
+logging:
+  level:
+    root: INFO
+    com.aiplatform: INFO
+    org.springframework.security: WARN
+    com.baomidou.mybatisplus: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId:-}] %-5level %logger{40} - %msg%n"
